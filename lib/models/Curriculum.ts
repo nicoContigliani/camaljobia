@@ -19,12 +19,31 @@ export interface IWorkExperience extends Document {
   description: string[];
 }
 
+export interface IEducation extends Document {
+  institution: string;
+  degree: string;
+  field_of_study: string;
+  period: string;
+  description?: string[];
+}
+
+export interface ICourse extends Document {
+  name: string;
+  institution: string;
+  completion_date: Date;
+  duration_hours?: number;
+  certificate_url?: string;
+  description?: string[];
+}
+
 export interface ICurriculum extends Document {
   user: Types.ObjectId;
   profile: string;
   professional_summary: string;
   skills: ISkillCategory;
   work_experience: IWorkExperience[];
+  education: IEducation[];
+  courses: ICourse[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -90,6 +109,63 @@ const workExperienceSchema = new Schema<IWorkExperience>({
   }]
 });
 
+const educationSchema = new Schema<IEducation>({
+  institution: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  degree: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  field_of_study: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  period: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  description: [{
+    type: String,
+    default: []
+  }]
+});
+
+const courseSchema = new Schema<ICourse>({
+  name: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  institution: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  completion_date: {
+    type: Date,
+    required: true
+  },
+  duration_hours: {
+    type: Number,
+    default: null
+  },
+  certificate_url: {
+    type: String,
+    default: null,
+    trim: true
+  },
+  description: [{
+    type: String,
+    default: []
+  }]
+});
+
 const curriculumSchema = new Schema<ICurriculum>({
   user: {
     type: Schema.Types.ObjectId,
@@ -113,6 +189,14 @@ const curriculumSchema = new Schema<ICurriculum>({
   work_experience: [{
     type: workExperienceSchema,
     required: true
+  }],
+  education: [{
+    type: educationSchema,
+    default: []
+  }],
+  courses: [{
+    type: courseSchema,
+    default: []
   }],
   createdAt: {
     type: Date,

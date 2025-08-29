@@ -1,108 +1,5 @@
-// import { Types } from 'mongoose';
-// import { ICurriculum, ISkillCategory, IWorkExperience } from '@/lib/models/Curriculum';
-
-// // Interface for the incoming JSON data
-// interface JSONSkillCategory {
-//   lenguajes?: string[];
-//   frameworks_y_librerias?: string[];
-//   bases_de_datos?: string[];
-//   herramientas_y_entornos?: string[];
-//   metodologias?: string[];
-//   seguridad?: string[];
-//   movil?: string[];
-//   analisis_y_gestion?: string[];
-//   comunicacion?: string[];
-// }
-
-// interface JSONWorkExperience {
-//   empresa: string;
-//   periodo: string;
-//   puesto: string;
-//   descripcion: string[];
-// }
-
-// interface JSONCV {
-//   perfil: string;
-//   resumen_profesional: string;
-//   habilidades: JSONSkillCategory;
-//   experiencia_laboral: JSONWorkExperience[];
-// }
-
-// interface JSONImportData {
-//   curriculum_vitae?: JSONCV[];
-// }
-
-// // Transform JSON data to match our Mongoose model
-// export function transformJSONToModel(jsonData: any, userId: string): Partial<ICurriculum> {
-//   // Handle both single CV and array of CVs
-//   let cvData: JSONCV;
-  
-//   if (jsonData.curriculum_vitae && Array.isArray(jsonData.curriculum_vitae)) {
-//     // If it's an array, take the first one
-//     cvData = jsonData.curriculum_vitae[0];
-//   } else {
-//     // Assume it's a single CV object
-//     cvData = jsonData;
-//   }
-
-//   // Transform skills
-//   const skills: ISkillCategory = {
-//     languages: cvData.habilidades.lenguajes || [],
-//     frameworks_libraries: cvData.habilidades.frameworks_y_librerias || [],
-//     databases: cvData.habilidades.bases_de_datos || [],
-//     tools_environments: cvData.habilidades.herramientas_y_entornos || [],
-//     methodologies: cvData.habilidades.metodologias || [],
-//     security: cvData.habilidades.seguridad || [],
-//     mobile: cvData.habilidades.movil || [],
-//     analysis_management: cvData.habilidades.analisis_y_gestion || [],
-//     communication: cvData.habilidades.comunicacion || [],
-//   };
-
-//   // Transform work experience
-//   const work_experience: IWorkExperience[] = cvData.experiencia_laboral.map((exp: JSONWorkExperience) => ({
-//     company: exp.empresa,
-//     period: exp.periodo,
-//     position: exp.puesto,
-//     description: exp.descripcion,
-//   }));
-
-//   return {
-//     user: new Types.ObjectId(userId) as any,
-//     profile: cvData.perfil,
-//     professional_summary: cvData.resumen_profesional,
-//     skills,
-//     work_experience,
-//   };
-// }
-
-// // Transform model data back to JSON format
-// export function transformModelToJSON(cv: ICurriculum): any {
-//   return {
-//     perfil: cv.profile,
-//     resumen_profesional: cv.professional_summary,
-//     habilidades: {
-//       lenguajes: cv.skills.languages,
-//       frameworks_y_librerias: cv.skills.frameworks_libraries,
-//       bases_de_datos: cv.skills.databases,
-//       herramientas_y_entornos: cv.skills.tools_environments,
-//       metodologias: cv.skills.methodologies,
-//       seguridad: cv.skills.security,
-//       movil: cv.skills.mobile,
-//       analisis_y_gestion: cv.skills.analysis_management,
-//       comunicacion: cv.skills.communication,
-//     },
-//     experiencia_laboral: cv.work_experience.map(exp => ({
-//       empresa: exp.company,
-//       periodo: exp.period,
-//       puesto: exp.position,
-//       descripcion: exp.description,
-//     })),
-//   };
-// }
-
-
 import { Types } from 'mongoose';
-import { ICurriculum, ISkillCategory, IWorkExperience } from '@/lib/models/Curriculum';
+import { ICurriculum, ISkillCategory, IWorkExperience, IEducation, ICourse } from '@/lib/models/Curriculum';
 
 // Interface for the incoming JSON data
 interface JSONSkillCategory {
@@ -124,11 +21,30 @@ interface JSONWorkExperience {
   descripcion: string[];
 }
 
+interface JSONEducation {
+  institucion: string;
+  titulo: string;
+  campo_estudio: string;
+  periodo: string;
+  descripcion?: string[];
+}
+
+interface JSONCourse {
+  nombre: string;
+  institucion: string;
+  fecha_finalizacion: string | null;
+  duracion_horas?: number | null;
+  url_certificado?: string | null;
+  descripcion?: string[];
+}
+
 interface JSONCV {
   perfil: string;
   resumen_profesional: string;
   habilidades: JSONSkillCategory;
   experiencia_laboral: JSONWorkExperience[];
+  educacion?: JSONEducation[];
+  cursos?: JSONCourse[];
 }
 
 interface JSONImportData {
@@ -160,26 +76,90 @@ function createWorkExperience(data: JSONWorkExperience): IWorkExperience {
   } as IWorkExperience;
 }
 
+// Helper function to create an education object
+function createEducation(data: JSONEducation): IEducation {
+  return {
+    institution: data.institucion,
+    degree: data.titulo,
+    field_of_study: data.campo_estudio,
+    period: data.periodo,
+    description: data.descripcion || [],
+  } as IEducation;
+}
+
+// Helper function to create a course object
+function createCourse(data: JSONCourse): ICourse {
+  // Manejar fecha_finalizacion null o undefined
+  let completionDate: Date;
+  if (data.fecha_finalizacion) {
+    completionDate = new Date(data.fecha_finalizacion);
+  } else {
+    // Fecha por defecto si no hay fecha de finalización
+    completionDate = new Date();
+  }
+
+  return {
+    name: data.nombre,
+    institution: data.institucion,
+    completion_date: completionDate,
+    duration_hours: data.duracion_horas || undefined,
+    certificate_url: data.url_certificado || undefined,
+    description: data.descripcion || [],
+  } as ICourse;
+}
+
 // Transform JSON data to match our Mongoose model
 export function transformJSONToModel(jsonData: any, userId: string): Partial<ICurriculum> {
+  // Validar que exista data
+  if (!jsonData) {
+    throw new Error('Datos de entrada vacíos');
+  }
+
   // Handle both single CV and array of CVs
   let cvData: JSONCV;
-  
+
   if (jsonData.curriculum_vitae && Array.isArray(jsonData.curriculum_vitae)) {
-    // If it's an array, take the first one
+    // Si es un array, tomar el primero
+    if (jsonData.curriculum_vitae.length === 0) {
+      throw new Error('Array curriculum_vitae está vacío');
+    }
     cvData = jsonData.curriculum_vitae[0];
   } else {
-    // Assume it's a single CV object
+    // Asumir que es un objeto CV individual
     cvData = jsonData;
+  }
+
+  // Validar campos requeridos
+  if (!cvData.perfil) {
+    throw new Error('Datos de CV incompletos. Se requiere "perfil"');
+  }
+  if (!cvData.resumen_profesional) {
+    throw new Error('Datos de CV incompletos. Se requiere "resumen_profesional"');
+  }
+  if (!cvData.habilidades) {
+    throw new Error('Datos de CV incompletos. Se requiere "habilidades"');
+  }
+  if (!cvData.experiencia_laboral || !Array.isArray(cvData.experiencia_laboral)) {
+    throw new Error('Datos de CV incompletos. Se requiere "experiencia_laboral" como array');
   }
 
   // Transform skills
   const skills: ISkillCategory = createSkillCategory(cvData.habilidades);
 
   // Transform work experience
-  const work_experience: IWorkExperience[] = cvData.experiencia_laboral.map((exp: JSONWorkExperience) => 
+  const work_experience: IWorkExperience[] = cvData.experiencia_laboral.map((exp: JSONWorkExperience) =>
     createWorkExperience(exp)
   );
+
+  // Transform education
+  const education: IEducation[] = (cvData.educacion || []).map((edu: JSONEducation) =>
+    createEducation(edu)
+  );
+
+  // Transform courses - filtrar cursos que no tengan nombre
+  const courses: ICourse[] = (cvData.cursos || [])
+    .filter((course: JSONCourse) => course.nombre && course.institucion)
+    .map((course: JSONCourse) => createCourse(course));
 
   return {
     user: new Types.ObjectId(userId) as any,
@@ -187,6 +167,8 @@ export function transformJSONToModel(jsonData: any, userId: string): Partial<ICu
     professional_summary: cvData.resumen_profesional,
     skills,
     work_experience,
+    education,
+    courses,
   };
 }
 
@@ -194,10 +176,10 @@ export function transformJSONToModel(jsonData: any, userId: string): Partial<ICu
 export function transformModelToJSON(cv: ICurriculum): any {
   // Convert Mongoose document to plain object if needed
   const plainCV = cv.toObject ? cv.toObject() : cv;
-  
+
   return {
-    perfil: plainCV.profile,
-    resumen_profesional: plainCV.professional_summary,
+    perfil: plainCV.profile || '',
+    resumen_profesional: plainCV.professional_summary || '',
     habilidades: {
       lenguajes: plainCV.skills?.languages || [],
       frameworks_y_librerias: plainCV.skills?.frameworks_libraries || [],
@@ -209,11 +191,26 @@ export function transformModelToJSON(cv: ICurriculum): any {
       analisis_y_gestion: plainCV.skills?.analysis_management || [],
       comunicacion: plainCV.skills?.communication || [],
     },
-    experiencia_laboral: plainCV.work_experience?.map((exp:any) => ({
-      empresa: exp.company,
-      periodo: exp.period,
-      puesto: exp.position,
-      descripcion: exp.description,
+    experiencia_laboral: plainCV.work_experience?.map((exp: any) => ({
+      empresa: exp.company || '',
+      periodo: exp.period || '',
+      puesto: exp.position || '',
+      descripcion: exp.description || [],
+    })) || [],
+    educacion: plainCV.education?.map((edu: any) => ({
+      institucion: edu.institution || '',
+      titulo: edu.degree || '',
+      campo_estudio: edu.field_of_study || '',
+      periodo: edu.period || '',
+      descripcion: edu.description || [],
+    })) || [],
+    cursos: plainCV.courses?.map((course: any) => ({
+      nombre: course.name || '',
+      institucion: course.institution || '',
+      fecha_finalizacion: course.completion_date?.toISOString().split('T')[0] || '',
+      duracion_horas: course.duration_hours || undefined,
+      url_certificado: course.certificate_url || undefined,
+      descripcion: course.description || [],
     })) || [],
   };
 }
