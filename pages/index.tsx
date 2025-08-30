@@ -1,109 +1,3 @@
-// import { useState } from 'react';
-// import {
-//   Container,
-//   Paper,
-//   Tabs,
-//   Tab,
-//   Box,
-//   Typography,
-//   AppBar,
-//   Toolbar
-// } from '@mui/material';
-// import LoginForm from '../components/LoginForm';
-// import RegisterForm from '../components/RegisterForm';
-// import { useAppSelector } from '../store/hooks';
-// import { useRouter } from 'next/router';
-// import { useEffect } from 'react';
-
-// interface TabPanelProps {
-//   children?: React.ReactNode;
-//   index: number;
-//   value: number;
-// }
-
-// function TabPanel(props: TabPanelProps) {
-//   const { children, value, index, ...other } = props;
-
-//   return (
-//     <div
-//       role="tabpanel"
-//       hidden={value !== index}
-//       id={`auth-tabpanel-${index}`}
-//       aria-labelledby={`auth-tab-${index}`}
-//       {...other}
-//     >
-//       {value === index && (
-//         <Box sx={{ p: 3 }}>
-//           {children}
-//         </Box>
-//       )}
-//     </div>
-//   );
-// }
-
-// function a11yProps(index: number) {
-//   return {
-//     id: `auth-tab-${index}`,
-//     'aria-controls': `auth-tabpanel-${index}`,
-//   };
-// }
-
-// export default function Home() {
-//   const [tabValue, setTabValue] = useState(0);
-//   const { isAuthenticated } = useAppSelector((state) => state.auth);
-//   const router = useRouter();
-
-//   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-//     setTabValue(newValue);
-//   };
-
-//   useEffect(() => {
-//     if (isAuthenticated) {
-//       router.push('/dashboard');
-//     }
-//   }, [isAuthenticated, router]);
-
-//   if (isAuthenticated) {
-//     return null;
-//   }
-
-//   return (
-//     <>
-//       <AppBar position="static">
-//         <Toolbar>
-//           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-//             My App
-//           </Typography>
-//         </Toolbar>
-//       </AppBar>
-
-//       <Container component="main" maxWidth="sm" sx={{ mt: 8 }}>
-//         <Paper elevation={3}>
-//           <Tabs
-//             value={tabValue}
-//             onChange={handleTabChange}
-//             aria-label="auth tabs"
-//             variant="fullWidth"
-//           >
-//             <Tab label="Login" {...a11yProps(0)} />
-//             <Tab label="Register" {...a11yProps(1)} />
-//           </Tabs>
-
-//           <TabPanel value={tabValue} index={0}>
-//             <LoginForm />
-//           </TabPanel>
-
-//           <TabPanel value={tabValue} index={1}>
-//             <RegisterForm />
-//           </TabPanel>
-//         </Paper>
-//       </Container>
-//     </>
-//   );
-// }
-
-
-
 import { useState } from 'react';
 import {
   Paper,
@@ -196,7 +90,7 @@ export default function Home() {
               color: '#fff'
             }}
           >
-            My App
+            CamalJob IA
           </Typography>
         </Toolbar>
       </AppBar>

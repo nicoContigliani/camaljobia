@@ -1,77 +1,3 @@
-// "use client"
-
-// import Head from 'next/head';
-// import dynamic from 'next/dynamic';
-// import React, { Suspense, useState, useEffect } from 'react';
-// import { useSelector } from 'react-redux';
-// import { Box, Container, Typography, CircularProgress } from '@mui/material';
-// import { RootState } from '../../store/store';
-
-// const Profile = dynamic(() => import('../../components/Profile'), {
-//     ssr: false
-// });
-
-// const CVPage: React.FC = () => {
-//     const { user, isAuthenticated } = useSelector((state: RootState) => state?.auth);
-//     const [isClient, setIsClient] = useState(false);
-
-//     useEffect(() => {
-//         setIsClient(true);
-//     }, []);
-
-//     if (!isClient) {
-//         return (
-//             <Container maxWidth="lg">
-//                 <Box sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
-//                     <CircularProgress />
-//                 </Box>
-//             </Container>
-//         );
-//     }
-
-//     if (!isAuthenticated || !user) {
-//         return (
-//             <Container maxWidth="lg">
-//                 <Box sx={{ py: 4 }}>
-//                     <Typography variant="h4" component="h1" gutterBottom>
-//                         Acceso Denegado
-//                     </Typography>
-//                     <Typography variant="body1">
-//                         Debes iniciar sesión para acceder a esta página.
-//                     </Typography>
-//                 </Box>
-//             </Container>
-//         );
-//     }
-
-//     return (
-//         <>
-//             <Head>
-//                 <title>Mi CV - Perfil</title>
-//                 <meta name="description" content="Gestiona tu perfil profesional" />
-//             </Head>
-
-//             <Container maxWidth="lg">
-//                 <Box sx={{ py: 4 }}>
-//                     <Suspense fallback={
-//                         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-//                             <CircularProgress />
-//                         </Box>
-//                     }>
-//                         {user && <Profile />}
-//                     </Suspense>
-//                 </Box>
-//             </Container>
-//         </>
-//     );
-// };
-
-// export default CVPage;
-
-
-
-
-
 "use client"
 
 import Head from 'next/head';
@@ -255,7 +181,7 @@ const CVPage: React.FC = () => {
               </Box>
             ) : cvs.length > 0 ? (
               <Box>
-                {cvs.map((cv) => (
+                {cvs?.map((cv) => (
                   <Box key={cv._id} sx={{ mb: 3 }}>
                     <Suspense fallback={
                       <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
