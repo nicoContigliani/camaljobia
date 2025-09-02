@@ -586,7 +586,7 @@ export default function Home() {
       </AppBar>
 
       <Container maxWidth="lg" sx={{ py: 0 }}>
-       
+
         <Box sx={{
           display: 'flex',
           minHeight: '80vh',
@@ -714,7 +714,9 @@ export default function Home() {
               </Tabs>
 
               <TabPanel value={tabValue} index={0}>
-                <LoginForm />
+                <LoginForm
+                  urlRdirect={"/dashboard"}
+                />
               </TabPanel>
 
               <TabPanel value={tabValue} index={1}>

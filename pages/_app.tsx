@@ -14,6 +14,9 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { store } from '@/store/store'
 import '../styles/globals.css'
 
+import dashboardTheme from '../theme';
+
+
 const theme = createTheme({
   palette: {
     primary: {
@@ -28,7 +31,7 @@ const theme = createTheme({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={dashboardTheme}>
         <CssBaseline />
         <Component {...pageProps} />
       </ThemeProvider>
