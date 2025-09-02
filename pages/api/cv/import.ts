@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     if (req.method === 'POST') {
-      const { profile, professional_summary, skills, work_experience } = req.body;
+      const { profile, professional_summary, skills, work_experience,education,courses } = req.body;
 
       // Validar datos requeridos
       if (!profile || !professional_summary) {
@@ -37,6 +37,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         professional_summary,
         skills: skills || {},
         work_experience: work_experience || [],
+        education: education || [], // Asegúrate de incluir educación
+        courses: courses || [], // Asegúrate de incluir cursos
         user: new Types.ObjectId(userId), // Convertir string a ObjectId
       };
       
