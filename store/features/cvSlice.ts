@@ -435,6 +435,7 @@ import { RootState } from '../store';
 
 // Crear una interfaz para los datos planos del CV (sin propiedades de Mongoose)
 export interface CVData {
+  isDefault?: any | null | undefined;
   _id: string;
   user: string;
   profile: string;

@@ -90,3 +90,15 @@ export interface CVVersion {
   updatedAt: Date;
   name: string;
 }
+
+export interface CoverLetterType {
+  _id: string;
+  user: string;
+  title: string;
+  content: string;
+  company?: string;
+  position?: string;
+  isTemplate: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
